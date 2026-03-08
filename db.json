@@ -1,35 +1,41 @@
 {
   "products": [
     {
-      "id": "sku-classic-001",
-      "name": "The Editorial Loafer",
-      "price": 245,
-      "stock": 2,
-      "image": "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=1000&auto=format&fit=crop",
-      "style": "classic",
-      "description": "Handcrafted premium leather loafers with a vintage silhouette.",
-      "similar": ["sku-classic-002"]
+      "id": "sku-valentino-001",
+      "name": "Valentino Rockstud Pump",
+      "price": 950,
+      "stock": 1,
+      "image": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=1000&auto=format&fit=crop",
+      "style": "elegant",
+      "description": "The epitome of criterian elegance. Handcrafted with iconic studs.",
+      "similar": [
+        "sku-chloe-001"
+      ]
     },
     {
-      "id": "sku-classic-002",
-      "name": "Oxford Heritage",
-      "price": 280,
+      "id": "sku-chloe-001",
+      "name": "Chloé Woody Tote",
+      "price": 1100,
       "stock": 5,
-      "image": "https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=1000&auto=format&fit=crop",
-      "style": "classic",
-      "description": "Timeless Oxford shoes for the modern minimalists.",
-      "similar": ["sku-classic-001"]
+      "image": "https://images.unsplash.com/photo-1584917033904-493bb3c3cc0a?q=80&w=1000&auto=format&fit=crop",
+      "style": "corporate",
+      "description": "A staple for the Corporate Girl. Functional luxury.",
+      "similar": [
+        "sku-valentino-001"
+      ]
     },
     {
-      "id": "sku-retro-90s",
-      "name": "90s Archive Boot",
-      "price": 310,
+      "id": "sku-hermes-oran",
+      "name": "H-Sandal Archive",
+      "price": 750,
       "stock": 0,
-      "image": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=1000&auto=format&fit=crop",
-      "style": "retro",
-      "description": "A throwback to the chunky silhouettes of the mid-90s.",
-      "similar": ["sku-classic-001"],
-      "preorder_date": "April 15, 2026"
+      "image": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=1000&auto=format&fit=crop",
+      "style": "classic",
+      "description": "Quiet luxury for every step. Timeless silhouette.",
+      "similar": [
+        "sku-valentino-001"
+      ],
+      "preorder_date": "May 20, 2026"
     }
   ]
 }
