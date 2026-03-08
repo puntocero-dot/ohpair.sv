@@ -1,0 +1,13 @@
+{
+    "name": "ohpair-vintage-tech",
+    "version": "1.0.0",
+    "description": "Premium Vintage-Tech E-commerce for Oh Pair",
+    "main": "index.html",
+    "scripts": {
+        "start": "npx live-server --port=$PORT --no-browser",
+        "dev": "live-server"
+    },
+    "dependencies": {
+        "live-server": "^1.2.1"
+    }
+}
