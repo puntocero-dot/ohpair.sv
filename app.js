@@ -14,10 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch Products from Mock DB
     async function fetchProducts() {
         try {
-            // In a real app, this would be an MCP call or an API request
-            const response = await fetch('db.json');
-            const data = await response.json();
-            products = data.products;
+            // Check if we have modified products in localStorage first
+            const savedProducts = localStorage.getItem('ohpair_products');
+            if (savedProducts) {
+                products = JSON.parse(savedProducts);
+            } else {
+                const response = await fetch('db.json');
+                const data = await response.json();
+                products = data.products;
+            }
             renderProducts();
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -50,10 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <p style="font-size: 0.8rem; color: var(--text-secondary); height: 3em; overflow: hidden;">${product.description}</p>
                 <div class="product-actions" style="margin-top: auto;">
-                    ${isOutOfStock 
-                        ? `<button class="preorder-btn" data-id="${product.id}" style="width: 100%; border: 1px solid var(--text-primary); padding: 1rem; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em;">Pre-order (Est. ${product.preorder_date})</button>`
-                        : `<button class="add-to-cart-btn" data-id="${product.id}" style="width: 100%; background-color: var(--text-primary); color: white; padding: 1rem; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em;">Add to Cart</button>`
-                    }
+                    ${isOutOfStock
+                    ? `<button class="preorder-btn" data-id="${product.id}" style="width: 100%; border: 1px solid var(--text-primary); padding: 1rem; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em;">Pre-order (Est. ${product.preorder_date})</button>`
+                    : `<button class="add-to-cart-btn" data-id="${product.id}" style="width: 100%; background-color: var(--text-primary); color: white; padding: 1rem; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em;">Add to Cart</button>`
+                }
                 </div>
             `;
 
@@ -95,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateCartUI() {
         cartToggle.innerText = `Cart (${cart.length})`;
-        
+
         if (cart.length === 0) {
             cartContent.innerHTML = '<p style="font-family: var(--font-serif); font-style: italic; color: var(--text-secondary);">Your cart is currently empty.</p>';
             checkoutSection.style.display = 'none';
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="remove-item" data-index="${index}" style="font-size: 1rem; margin-left: 1rem;">&times;</button>
                 </div>
             `).join('');
-            
+
             const total = cart.reduce((sum, item) => sum + item.price, 0);
             totalPriceDisplay.innerText = `$${total.toFixed(2)}`;
             checkoutSection.style.display = 'block';
@@ -146,20 +151,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // Simulated Stripe Checkout & Webhook
     document.getElementById('stripe-checkout').addEventListener('click', async () => {
         const btn = document.getElementById('stripe-checkout');
+        const userEmail = prompt("Please enter your employee email to complete the purchase:");
+        if (!userEmail) return;
+
         btn.innerText = 'Processing...';
         btn.disabled = true;
+
+        // Generate Order Object
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        const newOrder = {
+            id: 'ORD-' + Math.floor(Math.random() * 100000),
+            date: new Date().toLocaleDateString(),
+            items: [...cart],
+            total: total.toFixed(2),
+            status: 'Processing',
+            userEmail: userEmail
+        };
+
+        // Save to LocalStorage for Admin visibility
+        const currentOrders = JSON.parse(localStorage.getItem('ohpair_orders') || '[]');
+        currentOrders.unshift(newOrder); // Add to beginning
+        localStorage.setItem('ohpair_orders', JSON.stringify(currentOrders));
 
         // Simulate API call to Stripe/Webhook
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        alert('Order Placed Successfully! (Simulated)\nA summary has been sent to our Internal Call Center (WhatsApp/Telegram Webhook Triggered).');
-        
+        alert(`Order Placed Successfully, ${userEmail}!\n\nA summary has been sent to the Internal Call Center and your email ${userEmail}.\n\n(WhatsApp Notification Triggered)`);
+
         cart = [];
         updateCartUI();
         closeAgentPanel();
         btn.innerText = 'Proceed to Checkout';
         btn.disabled = false;
+
+        // Show tracking if employee
+        showOrderTracking(newOrder);
     });
+
+    function showOrderTracking(order) {
+        cartContent.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Tracking Order #${order.id}</h3>
+                <div style="background: var(--bg-tan); padding: 1.5rem; margin-bottom: 1rem;">
+                    <p style="font-size: 0.8rem; text-transform: uppercase;">Status</p>
+                    <p style="font-size: 1.2rem; font-family: var(--font-serif); font-style: italic;">${order.status}</p>
+                </div>
+                <p style="font-size: 0.7rem;">Expected delivery: 2-3 business days.</p>
+                <button id="back-to-shop" style="margin-top: 2rem; border-bottom: 1px solid var(--text-primary); font-size: 0.7rem; text-transform: uppercase;">Continue Shopping</button>
+            </div>
+        `;
+        checkoutSection.style.display = 'none';
+        document.getElementById('back-to-shop').addEventListener('click', () => {
+            updateCartUI();
+        });
+    }
 
     // Theme Toggle
     themeToggle.addEventListener('click', () => {

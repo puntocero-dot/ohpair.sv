@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oh Pair | Admin Backoffice</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .admin-container {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .data-table th {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.7rem;
+            color: var(--text-brown);
+        }
+
+        .edit-input {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 4px;
+            font-family: inherit;
+            width: 80px;
+        }
+
+        .edit-input:focus {
+            border-color: var(--accent-red);
+            outline: none;
+        }
+
+        .btn-save {
+            background: var(--text-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .bulk-area {
+            width: 100%;
+            height: 200px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 1rem;
+            background: #fff;
+            border: 1px solid var(--border-soft);
+        }
+
+        #login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-cream);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="fade-in">
+    <div id="login-modal">
+        <div class="login-box">
+            <h2 style="margin-bottom: 2rem;">Admin Access</h2>
+            <input type="password" id="admin-pass" placeholder="Enter Password"
+                style="padding: 1rem; border: 1px solid var(--border-soft); margin-bottom: 1rem; display: block; width: 300px;">
+            <button id="login-btn" class="btn-save" style="width: 100%;">Enter Dashboard</button>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4rem;">
+            <h1>Catalog Maintenance</h1>
+            <a href="index.html" style="font-size: 0.8rem; text-transform: uppercase;">Back to Store</a>
+        </div>
+
+        <section>
+            <h3>Quick Inventory Update</h3>
+            <table class="data-table" id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Product Name</th>
+                        <th>Price ($)</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-body">
+                    <!-- Loaded via admin.js -->
+                </tbody>
+            </table>
+        </section>
+
+        <section style="margin-top: 6rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Bulk Catalog Upload (JSON)</h3>
+                <button id="process-bulk" class="btn-save">Process Upload</button>
+            </div>
+            <textarea id="bulk-json" class="bulk-area"
+                placeholder='[{"id": "sku-1", "name": "...", "price": 0, "stock": 0, ...}]'></textarea>
+        </section>
+
+        <section style="margin-top: 6rem;">
+            <h3>Recent Employee Orders</h3>
+            <div id="orders-list">
+                <p style="font-style: italic; color: var(--text-brown);">No orders found.</p>
+            </div>
+        </section>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
