@@ -1,6 +1,6 @@
-const { getDb, saveDb } = require('../_db');
+const { getOrders, saveOrder } = require('../_db');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -14,29 +14,19 @@ module.exports = (req, res) => {
     return;
   }
 
-  const db = getDb();
-
-  if (req.method === 'GET') {
-    let orders = db.orders || [];
-    const { _sort, _order } = req.query;
-    if (_sort) {
-      orders = [...orders].sort((a, b) => {
-        const valA = a[_sort];
-        const valB = b[_sort];
-        if (typeof valA === 'string') {
-          return _order === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
-        }
-        return _order === 'desc' ? valB - valA : valA - valB;
-      });
+  try {
+    if (req.method === 'GET') {
+      const { _sort, _order } = req.query;
+      const orders = await getOrders(_sort, _order);
+      res.status(200).json(orders);
+    } else if (req.method === 'POST') {
+      const newOrder = req.body;
+      const saved = await saveOrder(newOrder);
+      res.status(201).json(saved || newOrder);
+    } else {
+      res.status(405).json({ error: 'Method not allowed' });
     }
-    res.status(200).json(orders);
-  } else if (req.method === 'POST') {
-    const newOrder = req.body;
-    db.orders = db.orders || [];
-    db.orders.push(newOrder);
-    saveDb(db);
-    res.status(201).json(newOrder);
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
