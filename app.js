@@ -1,6 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     let products = [];
     let cart = [];
+    let isEmployee = false;
+
+    const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '3000'
+        ? 'http://localhost:3002'
+        : '/api';
 
     const productGrid = document.getElementById('product-grid');
     const cartToggle = document.getElementById('cart-toggle');
@@ -11,18 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPriceDisplay = document.getElementById('total-price');
     const themeToggle = document.getElementById('theme-toggle');
 
-    // Fetch Products from Mock DB
+    // Fetch Products from Mock DB API
     async function fetchProducts() {
         try {
-            // Check if we have modified products in localStorage first
-            const savedProducts = localStorage.getItem('ohpair_products');
-            if (savedProducts) {
-                products = JSON.parse(savedProducts);
-            } else {
-                const response = await fetch('db.json');
-                const data = await response.json();
-                products = data.products;
-            }
+            const response = await fetch(`${API_URL}/products`);
+            products = await response.json();
             renderProducts();
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -117,8 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
 
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            totalPriceDisplay.innerText = `$${total.toFixed(2)}`;
+            let total = cart.reduce((sum, item) => sum + item.price, 0);
+            if (isEmployee) {
+                const discount = total * 0.20;
+                total = total - discount;
+                totalPriceDisplay.innerHTML = `<span style="text-decoration: line-through; opacity: 0.5; font-size: 0.8em; margin-right: 0.5rem;">$${(total + discount).toFixed(2)}</span> $${total.toFixed(2)} <span style="color: var(--accent-red); font-size: 0.6em; text-transform: uppercase;">(Emp -20%)</span>`;
+            } else {
+                totalPriceDisplay.innerText = `$${total.toFixed(2)}`;
+            }
             checkoutSection.style.display = 'block';
 
             // Attach remove listeners
@@ -158,25 +162,34 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
 
         // Generate Order Object
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        const total = isEmployee ? (cart.reduce((sum, item) => sum + item.price, 0) * 0.8).toFixed(2) : cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
         const newOrder = {
             id: 'ORD-' + Math.floor(Math.random() * 100000),
             date: new Date().toLocaleDateString(),
             items: [...cart],
-            total: total.toFixed(2),
+            total: total,
             status: 'Processing',
-            userEmail: userEmail
+            userEmail: userEmail,
+            isEmployeeOrder: isEmployee
         };
 
-        // Save to LocalStorage for Admin visibility
-        const currentOrders = JSON.parse(localStorage.getItem('ohpair_orders') || '[]');
-        currentOrders.unshift(newOrder); // Add to beginning
-        localStorage.setItem('ohpair_orders', JSON.stringify(currentOrders));
+        // Send Order to Database
+        try {
+            await fetch(`${API_URL}/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newOrder)
+            });
+            console.log('[Webhook] WhatsApp Notification sent to Call Center');
+            console.log(`[Webhook] Email Receipt sent to ${userEmail}`);
+        } catch (error) {
+            console.error('Error submitting order', error);
+        }
 
-        // Simulate API call to Stripe/Webhook
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        alert(`Order Placed Successfully, ${userEmail}!\n\nA summary has been sent to the Internal Call Center and your email ${userEmail}.\n\n(WhatsApp Notification Triggered)`);
+        alert(`Order Placed Successfully, ${userEmail}!\n\nA summary has been sent to the Internal Call Center and to your email.\n\n(WhatsApp & Email Webhooks Triggered)`);
 
         cart = [];
         updateCartUI();
@@ -207,10 +220,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Theme Toggle
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        themeToggle.innerText = document.body.classList.contains('dark-mode') ? 'Paper Light' : 'Paper Dark';
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.innerText = document.body.classList.contains('dark-mode') ? 'Paper Light' : 'Paper Dark';
+        });
+    }
+
+    // Employee Login
+    window.employeeLogin = function() {
+        const pin = prompt("Enter Employee PIN:");
+        if (pin === "7777") {
+            isEmployee = true;
+            document.body.insertAdjacentHTML('beforeend', '<div style="position: fixed; bottom: 0; width: 100%; text-align: center; background: var(--text-brown); color: white; padding: 0.5rem; font-size: 0.7rem; z-index: 99999; text-transform: uppercase;">Employee Access Granted - 20% Discount Active</div>');
+            updateCartUI();
+        } else {
+            alert("Invalid PIN.");
+        }
+    };
 
     // Initialize
     fetchProducts();

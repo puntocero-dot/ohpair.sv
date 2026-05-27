@@ -14,14 +14,13 @@
         <nav class="container flex-center"
             style="justify-content: space-between; padding-top: 2rem; padding-bottom: 2rem;">
             <div class="logo">
-                <img src="https://i.ibb.co/vzZ0y72/logo.png" alt="Oh Pair!" class="logo-img"
-                    onerror="this.src='https://raw.githubusercontent.com/puntocero-dot/ohpair.sv/main/logo.png'; this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
-                <h1 id="logo-fallback" style="font-size: 1.5rem; display: none;">OH PAIR!</h1>
+                <h1 style="font-size: 1.8rem; font-weight: 700; letter-spacing: 0.05em; margin: 0; color: var(--text-primary); cursor: pointer;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Oh Pair.</h1>
             </div>
             <div class="nav-links"
-                style="display: flex; gap: 2rem; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                style="display: flex; gap: 2rem; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; align-items: center;">
                 <a href="#">Colección</a>
                 <a href="#">Asesoría</a>
+                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-sans); color: var(--text-primary);">Paper Dark</button>
                 <a href="#" id="cart-toggle">Carrito (0)</a>
             </div>
         </nav>
@@ -64,7 +63,10 @@
             <div style="text-align: right; font-size: 0.7rem; color: var(--text-brown); line-height: 2;">
                 <p>&copy; 2026 OH PAIR SV</p>
                 <p>Desarrollado con Criterio.</p>
-                <a href="admin.html" style="text-decoration: underline; opacity: 0.5;">Admin Backoffice</a>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <a href="admin.html" style="text-decoration: underline; opacity: 0.5;">Admin Backoffice</a>
+                    <a href="#" onclick="employeeLogin(); return false;" style="text-decoration: underline; opacity: 0.5;">Employee Access</a>
+                </div>
             </div>
         </div>
     </footer>

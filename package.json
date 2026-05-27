@@ -1,13 +1,19 @@
-{
+﻿{
     "name": "ohpair-vintage-tech",
     "version": "1.0.0",
     "description": "Premium Vintage-Tech E-commerce for Oh Pair",
     "main": "index.html",
     "scripts": {
         "start": "npx live-server --port=$PORT --no-browser",
-        "dev": "live-server"
+        "dev:vercel": "vercel dev",
+        "dev": "concurrently \"live-server\" \"json-server --watch db.json --port 3002\"",
+        "server": "json-server --watch db.json --port 3002"
     },
     "dependencies": {
         "live-server": "^1.2.1"
+    },
+    "devDependencies": {
+        "concurrently": "^9.2.1",
+        "json-server": "^0.17.4"
     }
 }
