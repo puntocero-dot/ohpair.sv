@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const loginModal = document.getElementById('login-modal');
     const loginBtn = document.getElementById('login-btn');
     const adminPass = document.getElementById('admin-pass');

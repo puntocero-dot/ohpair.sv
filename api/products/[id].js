@@ -1,4 +1,4 @@
-﻿const { getDb, saveDb } = require('../_db');
+const { getDb, saveDb } = require('../_db');
 
 module.exports = (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
